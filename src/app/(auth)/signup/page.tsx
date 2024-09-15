@@ -1,0 +1,25 @@
+import { Metadata } from "next";
+import Link from "next/link";
+import SignUpForm from "./SignUpForm";
+
+export const metadata: Metadata = {
+  title: "Sign up page",
+};
+
+const signUpPage = () => {
+  return (
+    <div className="flex h-[100svh] flex-col">
+      <div className="m-auto w-[min(50rem,90%)] bg-card py-3">
+        <h1 className="text-center font-bold text-2xl">Sign Up Form</h1>
+        <SignUpForm />
+        <div className="text-center">
+          <Link className="hover:underline" href="/login">
+            Already have an Account? Log in
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default signUpPage;
