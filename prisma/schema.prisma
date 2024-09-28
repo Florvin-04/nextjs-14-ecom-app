@@ -18,9 +18,10 @@ model User {
   id           String    @id @default(auto()) @map("_id") @db.ObjectId
   username     String    @unique
   displayName  String
+  role         RoleType  @default(MEMBER)
   email        String?   @unique
   passwordHash String?
-  googleId     String?   @unique
+  googleId     String?
   avatarUrl    String?
   // bio          String?
   sessions     Session[]
@@ -31,11 +32,30 @@ model User {
   @@map("users")
 }
 
+enum RoleType {
+  ADMIN
+  MEMBER
+}
+
 model Session {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String
+  userId    String   @db.ObjectId
   expiresAt DateTime
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
+}
+
+model Product {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  price       Int
+  stock       Int
+  imagesUrl   String
+  category    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("products")
 }

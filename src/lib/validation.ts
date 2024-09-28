@@ -39,17 +39,13 @@ export const loginSchema = z.object({
 
 export type LoginSchemaType = z.infer<typeof loginSchema>;
 
-export const createPostSchema = z.object({
-  content: z.string().trim().min(1, "required field"),
-  mediaIds: z.array(z.string()).max(5, "Cannot have more than 5 attachments"),
+export const addProductSchema = z.object({
+  name: z.string().trim().min(1, "required field"),
+  price: z.number().min(1, "required field"),
+  description: z.string().trim().min(1, "required field"),
+  image: z.string().trim().min(1, "required field"),
+  stock: z.number().min(1, "required field"),
+  category: z.string().trim().min(1, "required field"),
 });
 
-export type CreatePostType = z.infer<typeof createPostSchema>;
-
-// ** To you can also update profile pic but it it already handled by core.ts in uploadthing server
-export const updateUserProfileScheme = z.object({
-  displayName: z.string().trim().min(1, "required field"),
-  bio: z.string().max(1000, "Must be at most 1000 characters"),
-});
-
-export type UpdateUserProfileValues = z.infer<typeof updateUserProfileScheme>;
+export type AddProductType = z.infer<typeof addProductSchema>;

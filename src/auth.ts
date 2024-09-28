@@ -1,8 +1,10 @@
 import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
 import prisma from "./lib/prisma";
-import { Lucia, Session, User } from "lucia";
+import { Lucia, Session } from "lucia";
 import { cache } from "react";
 import { cookies } from "next/headers";
+import { RoleType } from "@prisma/client";
+import { DatabaseUserAttributes, UserDetails, UserDetailsRoleType } from "./lib/types";
 // import { Google } from "arctic";
 
 const adapter = new PrismaAdapter(prisma.session, prisma.user);
@@ -16,7 +18,7 @@ export const lucia = new Lucia(adapter, {
   },
 
   getUserAttributes(DatabaseUserAttributes) {
-    const { id, avatarUrl, displayName, googleId, username } =
+    const { id, avatarUrl, displayName, googleId, username, role } =
       DatabaseUserAttributes;
     return {
       id,
@@ -24,6 +26,7 @@ export const lucia = new Lucia(adapter, {
       displayName,
       avatarUrl,
       googleId,
+      role,
     };
   },
 });
@@ -35,13 +38,7 @@ declare module "lucia" {
   }
 }
 
-interface DatabaseUserAttributes {
-  id: string;
-  username: string;
-  displayName: string;
-  avatarUrl: string | null;
-  googleId: string | null;
-}
+
 
 // export const google = new Google(
 //   CONFIG_APP.env.GOOGLE_CLIENT_ID!,
@@ -51,10 +48,26 @@ interface DatabaseUserAttributes {
 
 // http://localhost:3000/api/auth/callback/google
 
+// Function to create user roles from a string array
+// function createUserRoles(roles: string[]): RoleType[] {
+//   return roles.map(role => role as RoleType); // Ensure each role is cast to RoleType
+// }
+
+function createUserRole(userRole: RoleType): UserDetailsRoleType {
+  // Create an object with all roles set to false
+  const roles = Object.keys(RoleType).reduce((acc, role) => {
+    acc[role as RoleType] = userRole === role;
+    return acc;
+  }, {} as Record<RoleType, boolean>);
+
+  return roles;
+}
+
 export const validateRequest = cache(
-  async (): Promise<
-    { user: User; session: Session } | { user: null; session: null }
-  > => {
+  async (): Promise<{
+    user: UserDetails | null;
+    session: Session | null; // Ensure session can also be null
+  }> => {
     const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
 
     if (!sessionId) {
@@ -66,12 +79,9 @@ export const validateRequest = cache(
 
     const result = await lucia.validateSession(sessionId);
 
-    // console.log(result);
-
     try {
       if (result.session && result.session.fresh) {
         const sessionCookie = lucia.createSessionCookie(result.session.id);
-
         cookies().set(
           sessionCookie.name,
           sessionCookie.value,
@@ -81,7 +91,6 @@ export const validateRequest = cache(
 
       if (!result.session) {
         const sessionCookie = lucia.createBlankSessionCookie();
-
         cookies().set(
           sessionCookie.name,
           sessionCookie.value,
@@ -90,6 +99,23 @@ export const validateRequest = cache(
       }
     } catch {}
 
-    return result;
+    const user: UserDetails | null = result.user
+      ? {
+          role: createUserRole(result.user.role),
+          username: result.user.username,
+          displayName: result.user.displayName,
+          avatarUrl: result.user.avatarUrl,
+          googleId: result.user.googleId,
+        }
+      : null;
+
+    const sessionResult = {
+      user,
+      session: result.session, // Ensure session is correctly typed
+    };
+
+    console.log({ result });
+
+    return sessionResult;
   }
 );
