@@ -4,7 +4,12 @@ import { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 export type ControllerType = ControllerRenderProps<FieldValues, string>;
 
-export type FieldType = "text" | "textarea" | "select" | "customField";
+export type FieldType =
+  | "text"
+  | "textarea"
+  | "select"
+  | "customField"
+  | "number";
 
 type RenderCustomFieldParams = {
   field: ControllerType; // Assuming ControllerType is already defined

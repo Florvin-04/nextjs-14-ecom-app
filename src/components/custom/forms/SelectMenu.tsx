@@ -16,7 +16,7 @@ export default function SelectMenu({ field, children }: Props) {
   return (
     <Select onValueChange={field.onChange} defaultValue={field.value}>
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Theme" />
+        <SelectValue placeholder="Select" />
       </SelectTrigger>
       <SelectContent>{children}</SelectContent>
     </Select>

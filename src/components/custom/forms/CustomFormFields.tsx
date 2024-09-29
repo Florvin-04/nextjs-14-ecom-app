@@ -1,15 +1,7 @@
-import {
-  FieldValues,
-  Controller,
-  ControllerRenderProps,
-  Control,
-  Path,
-} from "react-hook-form";
+import { FieldValues, Controller, Control, Path } from "react-hook-form";
 
-import { FormFieldProps } from "@/lib/types";
+import { ControllerType, FormFieldProps } from "@/lib/types";
 import Field from ".";
-
-type ControllerType = ControllerRenderProps<FieldValues, string>;
 
 const RenderInput = ({
   field,
@@ -29,6 +21,9 @@ const RenderInput = ({
       return (
         <Field.SelectMenu field={field}>{props.children}</Field.SelectMenu>
       );
+
+    case "number":
+      return <Field.InputNumber field={field} props={props} />;
 
     case "customField":
       return props.renderCustomField

@@ -39,13 +39,34 @@ export const loginSchema = z.object({
 
 export type LoginSchemaType = z.infer<typeof loginSchema>;
 
+// const imageSchema = z
+//   .instanceof(File)
+//   .refine(
+//     (file) => {
+//       const isImageType = file.type.startsWith("image/");
+//       const hasNoType = file.type === "";
+//       return isImageType || hasNoType;
+//     },
+//     {
+//       message: "File must be an image or have no file type.",
+//     }
+//   )
+//   .refine((file) => file.size <= 2 * 1024 * 1024, {
+//     message: "File size must be less than or equal to 2MB.",
+//   });
+
 export const addProductSchema = z.object({
   name: z.string().trim().min(1, "required field"),
-  price: z.number().min(1, "required field"),
+  price: z.string().min(1, "required field"),
   description: z.string().trim().min(1, "required field"),
-  image: z.string().trim().min(1, "required field"),
-  stock: z.number().min(1, "required field"),
+  // image: z.string().trim().min(1, "required field"),
+  // image: z.union([imageSchema, z.null()]).refine((file) => !file, {
+  //   message: "Image file is required.",
+  // }),
+  stock: z.string().min(1, "required field"),
   category: z.string().trim().min(1, "required field"),
 });
 
 export type AddProductType = z.infer<typeof addProductSchema>;
+
+export type AddProductActionValue = AddProductType & { imageUrl: string };

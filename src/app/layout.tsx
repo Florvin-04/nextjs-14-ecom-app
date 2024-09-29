@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import Navbar from "@/components/custom/Navbar";
 import { cn } from "@/lib/utils";
+import ReactQueryProvider from "./ReactQueryProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,21 +30,24 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={cn(`${geistSans.variable} ${geistMono.variable}`, "")}>
-        <div className="flex flex-col min-h-[100svh]">
-          <Navbar />
-          <div className="flex-1 bg-red-500/10">{children}</div>
-        </div>
-        <Toaster
-          toastOptions={{
-            classNames: {
-              default: "bg-white text-black border-border shadow-lg w-full",
-              error: "bg-red-400",
-              success: "text-green-400",
-              warning: "text-yellow-400",
-              info: "bg-blue-400",
-            },
-          }}
-        />
+        {/* <NextSSRPlugin routerConfig={extractRouterConfig(fileRouter)} /> */}
+        <ReactQueryProvider>
+          <div className="flex flex-col min-h-[100svh]">
+            <Navbar />
+            <div className="flex-1 bg-red-500/10">{children}</div>
+          </div>
+          <Toaster
+            toastOptions={{
+              classNames: {
+                default: "bg-white text-black border-border shadow-lg w-full",
+                error: "bg-red-400",
+                success: "text-green-400",
+                warning: "text-yellow-400",
+                info: "bg-blue-400",
+              },
+            }}
+          />
+        </ReactQueryProvider>
       </body>
     </html>
   );
