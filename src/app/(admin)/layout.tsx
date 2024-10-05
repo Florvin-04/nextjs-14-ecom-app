@@ -1,3 +1,4 @@
+import React from "react";
 import { validateRequest } from "@/auth";
 import { redirect } from "next/navigation";
 

@@ -23,6 +23,7 @@ import { ChangeEvent, useState } from "react";
 import { useForm } from "react-hook-form";
 import Resizer from "react-image-file-resizer";
 import { useAddProductMutation } from "../admin/products/mutation";
+import React from "react";
 
 type Props = {
   onClose: () => void;

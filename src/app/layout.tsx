@@ -29,7 +29,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn(`${geistSans.variable} ${geistMono.variable}`, "")}>
+      <body
+        className={cn(
+          `${geistSans.variable} ${geistMono.variable} !pointer-events-auto`,
+          ""
+        )}
+      >
         {/* <NextSSRPlugin routerConfig={extractRouterConfig(fileRouter)} /> */}
         <ReactQueryProvider>
           <div className="flex flex-col min-h-[100svh]">

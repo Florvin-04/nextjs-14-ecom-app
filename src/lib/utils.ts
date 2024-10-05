@@ -52,3 +52,6 @@ export const createNewFileFromBlob = ({
     type,
   });
 };
+
+export const wait = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));

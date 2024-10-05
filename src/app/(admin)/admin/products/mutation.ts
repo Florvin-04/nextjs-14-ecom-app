@@ -1,11 +1,18 @@
-import { AddProductType } from "@/lib/validation";
-import { useMutation } from "@tanstack/react-query";
-import { handleAddProductAction } from "../../action";
-import { toast } from "sonner";
-import { createNewFileFromBlob } from "@/lib/utils";
+import { ProductData } from "@/lib/types";
 import { useUploadThing } from "@/lib/uploadthing";
+import { createNewFileFromBlob } from "@/lib/utils";
+import { AddProductType } from "@/lib/validation";
+import {
+  QueryFilters,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { toast } from "sonner";
+import { handleAddProductAction } from "../../action";
 
 export function useAddProductMutation() {
+  const queryClient = useQueryClient();
+
   const { startUpload: startUploadProductImage } =
     useUploadThing("productImage");
   const mutation = useMutation({
@@ -19,11 +26,11 @@ export function useAddProductMutation() {
 
       const uploadedImage = await startUploadProductImage([convertedImage]);
 
-      console.log({
-        uploadedImage,
-        value,
-        asd: uploadedImage?.[0].serverData.fileUrl,
-      });
+      // console.log({
+      //   uploadedImage,
+      //   value,
+      //   asd: uploadedImage?.[0].serverData.fileUrl,
+      // });
 
       return await handleAddProductAction({
         ...rest,
@@ -31,7 +38,22 @@ export function useAddProductMutation() {
       });
     },
 
-    onSuccess: (value) => {
+    onSuccess: async (value) => {
+      const queryFilter: QueryFilters = { queryKey: ["products-admin"] };
+
+      await queryClient.cancelQueries(queryFilter);
+
+      queryClient.setQueriesData<ProductData>(queryFilter, (prevData) => {
+        if (!prevData) {
+          return;
+        }
+
+        return {
+          products: [...prevData.products, value],
+          total: prevData.total + 1,
+        };
+      });
+
       toast.success("Product Added Successfully", {
         description: `${value.name} added successfully`,
         action: {

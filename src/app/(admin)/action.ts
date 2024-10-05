@@ -7,7 +7,7 @@ import { AddProductActionValue } from "@/lib/validation";
 export const handleAddProductAction = async (values: AddProductActionValue) => {
   const { user } = await validateRequest();
 
-  if (!user) throw new Error("Unauthorized");
+  if (!user || !user.role.ADMIN) throw new Error("Unauthorized");
 
   const { category, description, name, price, stock, imageUrl } = values;
 
@@ -20,6 +20,18 @@ export const handleAddProductAction = async (values: AddProductActionValue) => {
       price: Number(price),
       stock: Number(stock),
     },
+  });
+
+  return product;
+};
+
+export const handleDeleteProductAction = async (id: string) => {
+  const { user } = await validateRequest();
+
+  if (!user || !user.role.ADMIN) throw new Error("Unauthorized");
+
+  const product = await prisma.product.delete({
+    where: { id },
   });
 
   return product;

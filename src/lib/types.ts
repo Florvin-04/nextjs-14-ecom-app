@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { RoleType } from "@prisma/client";
+import { Product, RoleType } from "@prisma/client";
 import { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 export type ControllerType = ControllerRenderProps<FieldValues, string>;
@@ -46,4 +46,9 @@ export type UserDetailsRoleType = {
 
 export type UserDetails = Omit<DatabaseUserAttributes, "id" | "role"> & {
   role: UserDetailsRoleType;
+};
+
+export type ProductData = {
+  products: Product[];
+  total: number;
 };
