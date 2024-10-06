@@ -51,4 +51,6 @@ export type UserDetails = Omit<DatabaseUserAttributes, "id" | "role"> & {
 export type ProductData = {
   products: Product[];
   total: number;
+  page: number;
+  limit: number;
 };

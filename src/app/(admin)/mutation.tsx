@@ -27,6 +27,8 @@ export const useDeleteProductMutation = () => {
             (product) => product.id !== deletedProduct.id
           ),
           total: prevData.total - 1,
+          page: prevData.page,
+          limit: prevData.limit,
         };
       });
     },

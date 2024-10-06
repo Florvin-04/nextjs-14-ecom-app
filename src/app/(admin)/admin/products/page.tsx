@@ -12,7 +12,6 @@ export default async function ProductsPage() {
         <p className="truncate">asasdasdasdasdasdsadasda</p>
       </div>
       <ProductsTable />
-      {/* <DataTable columns={columns} data={data?.data} /> */}
     </div>
   );
 }

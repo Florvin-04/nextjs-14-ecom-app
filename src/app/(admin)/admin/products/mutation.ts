@@ -51,6 +51,8 @@ export function useAddProductMutation() {
         return {
           products: [...prevData.products, value],
           total: prevData.total + 1,
+          page: prevData.page,
+          limit: prevData.limit,
         };
       });
 
