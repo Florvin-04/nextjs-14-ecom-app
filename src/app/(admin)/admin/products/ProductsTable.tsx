@@ -11,7 +11,7 @@ import { ProductData } from "@/lib/types";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
-import { ChangeEvent, useMemo } from "react";
+import { ChangeEvent } from "react";
 
 const PAGE_LIMIT = 5;
 
