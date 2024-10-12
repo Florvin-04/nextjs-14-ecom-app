@@ -70,3 +70,7 @@ export const addProductSchema = z.object({
 export type AddProductType = z.infer<typeof addProductSchema>;
 
 export type AddProductActionValue = AddProductType & { imageUrl: string };
+export type UpdateProductValue = AddProductType & {
+  imageBlob: Blob;
+  imageUrl: string;
+};

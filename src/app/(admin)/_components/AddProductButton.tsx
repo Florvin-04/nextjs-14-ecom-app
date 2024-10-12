@@ -10,7 +10,12 @@ export default function AddProductButton() {
   return (
     <>
       <Button onClick={() => setOpenDialog(true)}>Add Product</Button>
-      {openDialog && <AddProductDialog onClose={() => setOpenDialog(false)} />}
+      {openDialog && (
+        <AddProductDialog
+          transaction="add"
+          onClose={() => setOpenDialog(false)}
+        />
+      )}
     </>
   );
 }

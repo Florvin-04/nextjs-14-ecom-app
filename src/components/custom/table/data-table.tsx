@@ -45,7 +45,10 @@ export function DataTable<TData, TValue>({
                   return (
                     <TableHead
                       key={header.id}
-                      className={cn("", header.index === 0 && "sticky left-0")}
+                      className={cn(
+                        "",
+                        header.index === 0 && "sticky left-0 bg-white-500 p-0"
+                      )}
                       style={{
                         // width: `${
                         //   header.getSize() === 150 ? header.getSize() : "100%"
@@ -75,7 +78,9 @@ export function DataTable<TData, TValue>({
                   className="min-w-0 cursor-pointer"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  onClick={() => row.toggleSelected()}
+                  onClick={() => {
+                    row.toggleSelected();
+                  }}
                 >
                   {row.getVisibleCells().map((cell) => {
                     return (
@@ -84,10 +89,16 @@ export function DataTable<TData, TValue>({
                         className={cn(
                           "min-w-0 truncate",
                           cell.column.id === "select" &&
-                            "sticky left-0 [&:has([role=checkbox])]:pr-2"
+                            "sticky left-0 [&:has([role=checkbox])]:pr-2 bg-white"
                         )}
                       >
-                        <div className="truncate">
+                        <div
+                          className={cn(
+                            "truncate",
+                            cell.column.id === "select" &&
+                              "flex justify-center items-center"
+                          )}
+                        >
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()

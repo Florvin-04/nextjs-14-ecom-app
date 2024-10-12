@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { ProductData } from "@/lib/types";
 import { NextRequest } from "next/server";
 
@@ -13,7 +14,9 @@ export async function GET(req: NextRequest) {
     }
     const page = req.nextUrl.searchParams.get("page") || "1";
     const limit = req.nextUrl.searchParams.get("limit") || "5";
-    // const search = req.nextUrl.searchParams.get("search") || "";
+    const search = req.nextUrl.searchParams.get("search") || "";
+
+    const searchQuery = search.split(" ").join(" & ");
 
     // const products = await prisma.product.findMany({
     //   take: 5,
@@ -27,12 +30,37 @@ export async function GET(req: NextRequest) {
 
     // ********************************
 
+    const searchIncludes: Prisma.ProductWhereInput[] = [
+      {
+        name: {
+          contains: searchQuery,
+          mode: "insensitive",
+        },
+      },
+      {
+        description: {
+          contains: searchQuery,
+          mode: "insensitive",
+        },
+      },
+    ];
+
     const [products, productsCount] = await prisma.$transaction([
       prisma.product.findMany({
+        where: {
+          OR: searchIncludes,
+        },
         take: Number(limit),
         skip: (Number(page) - 1) * Number(limit),
+        orderBy: {
+          updatedAt: "desc",
+        },
       }),
-      prisma.product.count(),
+      prisma.product.count({
+        where: {
+          OR: searchIncludes,
+        },
+      }),
     ]);
 
     const data: ProductData = {

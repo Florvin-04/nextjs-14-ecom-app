@@ -19,7 +19,7 @@ export const columns: ColumnDef<Product>[] = [
   {
     id: "select",
     header: ({ table }) => (
-      <div className="flex justify-start items-center">
+      <div className="flex justify-center items-center bg-white">
         <Checkbox
           checked={
             table.getIsAllPageRowsSelected() ||

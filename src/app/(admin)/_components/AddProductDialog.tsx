@@ -15,41 +15,53 @@ import {
   readableFormatNumber,
   readableLargeNumber,
 } from "@/lib/utils";
-import { addProductSchema, AddProductType } from "@/lib/validation";
+import {
+  AddProductActionValue,
+  addProductSchema,
+  AddProductType,
+} from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Camera } from "lucide-react";
 import Image, { StaticImageData } from "next/image";
-import { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Resizer from "react-image-file-resizer";
-import { useAddProductMutation } from "../admin/products/mutation";
-import React from "react";
+import {
+  useAddProductMutation,
+  useUpdateProductMutation,
+} from "../admin/products/mutation";
+import { memo } from "react";
 
 type Props = {
   onClose: () => void;
+  transaction: "edit" | "add";
+  productInitialValues?: AddProductActionValue & { id: string };
 };
 
 const categories = [
   { value: "men", displayName: "Men" },
   { value: "women", displayName: "Women" },
-  { value: "books", displayName: "Books" },
-  { value: "other", displayName: "Other" },
 ];
 
-export default function AddProductDialog({ onClose }: Props) {
+export default memo(function AddProductDialog({
+  onClose,
+  transaction,
+  productInitialValues,
+}: Props) {
+  const { imageUrl, ...restInitalValues } = productInitialValues || {};
   const [croppedImage, setCroppedImage] = useState<Blob | null>(null);
+  const [isImagePlaceholder, setIsImagePlaceholder] = useState(false);
   const [imageErrorMessage, setImageErrorMessage] = useState("");
 
   const mutation = useAddProductMutation();
+  const updateMutation = useUpdateProductMutation();
 
   const form = useForm<AddProductType>({
     resolver: zodResolver(addProductSchema),
     defaultValues: {
-      category: "",
-      description: "",
-      name: "",
-      price: "",
-      stock: "",
+      ...restInitalValues,
+
+      // ...(transaction === "edit" && restInitalValues),
     },
   });
 
@@ -60,50 +72,95 @@ export default function AddProductDialog({ onClose }: Props) {
   const handleSubmitForm = async (values: AddProductType) => {
     if (!croppedImage) return;
 
-    mutation.mutate(
-      {
-        ...values,
-        imageBlob: croppedImage,
-      },
-      {
-        onSuccess: () => {
-          onClose();
-          setCroppedImage(null);
+    if (transaction === "add") {
+      mutation.mutate(
+        {
+          ...values,
+          imageBlob: croppedImage,
         },
-      }
-    );
+        {
+          onSuccess: () => {
+            onClose();
+            setCroppedImage(null);
+          },
+        }
+      );
+    }
 
-    // startTransition(async () => {
-    //   const { error } = await handleLoginAction(values);
+    if (transaction === "edit") {
+      const changedFields = Object.keys(values).reduce((acc, key) => {
+        const typedKey = key as keyof AddProductType;
+        // console.log(values[typedKey] !== productInitialValues?.[typedKey]);
 
-    //   if (error) {
-    //     toast({
-    //       title: "Something Went Wrong",
-    //       variant: "destructive",
-    //       description: error,
-    //     });
-    //   }
-    // });
+        if (values[typedKey] !== productInitialValues?.[typedKey]) {
+          acc[typedKey] = values[typedKey];
+        }
+        return acc;
+      }, {} as Partial<AddProductType>);
+
+      // console.log("Changed fields:", changedFields);
+
+      updateMutation.mutate(
+        {
+          ...changedFields,
+          ...(!isImagePlaceholder && { imageBlob: croppedImage }),
+          id: productInitialValues?.id || "",
+        },
+        {
+          onSuccess: () => {
+            onClose();
+            setCroppedImage(null);
+          },
+        }
+      );
+    }
   };
+
+  useEffect(() => {
+    const fetchImageBlob = async () => {
+      if (imageUrl) {
+        try {
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          setCroppedImage(blob);
+          setIsImagePlaceholder(true);
+        } catch (error) {
+          setIsImagePlaceholder(false);
+          console.error("Error fetching the image:", error);
+        }
+      }
+    };
+
+    fetchImageBlob();
+  }, [imageUrl]);
 
   return (
     <Dialog open onOpenChange={() => onClose()}>
-      <DialogContent className="max-h-[90svh] overflow-y-auto">
+      <DialogContent
+        onPointerDownOutside={(e) => e.preventDefault()}
+        className="max-h-[90svh] overflow-y-auto"
+      >
         <DialogHeader>
-          <DialogTitle>Add Product</DialogTitle>
+          <DialogTitle>
+            {transaction === "add" ? "Add" : "Edit"} Product
+          </DialogTitle>
         </DialogHeader>
-
-        <div className="size-[10rem] relative">
-          <AddProductImage
-            src={
-              croppedImage
-                ? URL.createObjectURL(croppedImage)
-                : imagePlaceHolder
-              // : user.avatarUrl || avatarPlaceHolder
-            }
-            handleSetImageErrorMessage={handleSetImageErrorMessage}
-            onCropedImage={setCroppedImage}
-          />
+        <div>
+          <div className="size-[10rem] relative">
+            <AddProductImage
+              src={
+                croppedImage
+                  ? URL.createObjectURL(croppedImage)
+                  : imagePlaceHolder
+                // : user.avatarUrl || avatarPlaceHolder
+              }
+              handleSetImageErrorMessage={handleSetImageErrorMessage}
+              onCropedImage={(blob) => {
+                setIsImagePlaceholder(false);
+                setCroppedImage(blob);
+              }}
+            />
+          </div>
           {imageErrorMessage && (
             <p className="text-red-500 text-sm">{imageErrorMessage}</p>
           )}
@@ -197,7 +254,12 @@ export default function AddProductDialog({ onClose }: Props) {
 
           <DialogFooter>
             <Button
-              disabled={mutation.isPending}
+              isLoading={mutation.isPending || updateMutation.isPending}
+              disabled={
+                mutation.isPending ||
+                updateMutation.isPending ||
+                (!form.formState.isDirty && isImagePlaceholder)
+              }
               onClick={() => {
                 if (!croppedImage) {
                   setImageErrorMessage("Image is required");
@@ -211,7 +273,7 @@ export default function AddProductDialog({ onClose }: Props) {
       </DialogContent>
     </Dialog>
   );
-}
+});
 
 type AddProductImageProps = {
   src: string | StaticImageData;
@@ -244,7 +306,7 @@ function AddProductImage({
 
     handleSetImageErrorMessage("");
 
-    console.log({ file });
+    // console.log({ file });
     handleChangeImage(file);
   };
 

@@ -1,4 +1,3 @@
-import AddProductButton from "../../_components/AddProductButton";
 import ProductsTable from "./ProductsTable";
 
 export default async function ProductsPage() {
@@ -6,11 +5,8 @@ export default async function ProductsPage() {
 
   return (
     <div className="">
-      Products
-      <AddProductButton />
-      <div>
-        <p className="truncate">asasdasdasdasdasdsadasda</p>
-      </div>
+      {/* <h2>All Products</h2> */}
+
       <ProductsTable />
     </div>
   );
