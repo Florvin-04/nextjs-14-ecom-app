@@ -23,10 +23,8 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import {
-  useAddProductMutation,
-  useUpdateProductMutation,
-} from "../admin/products/mutation";
+import { useAddProductMutation, useUpdateProductMutation } from "../mutation";
+
 
 type Props = {
   onClose: () => void;

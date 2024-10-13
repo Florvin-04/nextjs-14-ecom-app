@@ -1,5 +1,7 @@
 "use client";
 
+import { useUpdateProfileMutation } from "@/app/mutation";
+import imagePlaceHolder from "@/assets/avatar-placeholder.png";
 import {
   Dialog,
   DialogContent,
@@ -8,19 +10,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import ImageInput from "./ImageInput";
-import imagePlaceHolder from "@/assets/avatar-placeholder.png";
-import { useEffect, useState } from "react";
+import { UserDetails } from "@/lib/types";
+import { areAllTrue, getPartialUpdatedData } from "@/lib/utils";
 import { userSchema, UserSchemaValue } from "@/lib/validation";
-import { useForm } from "react-hook-form";
+import { useSession } from "@/providers/SessionProvider";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import CustomFormField from "./forms/CustomFormFields";
-import { useUpdateProfileMutation } from "@/app/mutation";
-import { User } from "@prisma/client";
-import { UserDetails } from "@/lib/types";
-import { useSession } from "@/providers/SessionProvider";
-import { areAllTrue, getPartialUpdatedData } from "@/lib/utils";
+import ImageInput from "./ImageInput";
 
 type Props = {
   onCloseModal: () => void;
@@ -63,17 +62,15 @@ export default function EditProfileModal({
       changedFields = getPartialUpdatedData(initialValues, values);
     }
 
-    console.log("changedFields", changedFields);
-
-    // updateProfileMutation.mutate(
-    //   { ...initialValues, id: user?.id },
-    //   {
-    //     onSuccess: () => {
-    //       console.log("success");
-    //       onCloseModal();
-    //     },
-    //   }
-    // );
+    updateProfileMutation.mutate(
+      { ...changedFields, id: user?.id },
+      {
+        onSuccess: () => {
+          console.log("success");
+          onCloseModal();
+        },
+      }
+    );
   };
 
   useEffect(() => {

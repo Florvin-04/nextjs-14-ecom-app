@@ -16,9 +16,9 @@ export function useUpdateProfileMutation() {
     mutationFn: async (
       updatedData: Partial<UserSchemaValue> & { id: string }
     ) => {
-      console.log("updatedData mutaion", updatedData);
-
       const { avatarBlob, ...restUpdatedData } = updatedData;
+
+      console.log("restUpdatedData", updatedData);
 
       let avatarUrl = "";
 
@@ -29,16 +29,19 @@ export function useUpdateProfileMutation() {
           type: "image/webp",
         });
 
+        console.log("convertedImage", convertedImage);
+
         const uploadedAvatar = await startUploadAvatar([convertedImage], {});
 
         avatarUrl = uploadedAvatar?.[0].serverData.fileUrl || "";
       }
 
+      console.log("avatarUrl", avatarUrl);
+
       return await handleUpdateProfileAction({ ...restUpdatedData, avatarUrl });
     },
 
-    onSuccess: async (updatedData) => {
-      console.log("updatedData", updatedData);
+    onSuccess: async () => {
       router.refresh();
     },
 

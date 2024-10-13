@@ -7,9 +7,7 @@ import {
   AddProductActionValue,
   addProductSchema,
   UpdateProductValue,
-  userSchema,
 } from "@/lib/validation";
-import { User } from "@prisma/client";
 import { UTApi } from "uploadthing/server";
 
 export const handleAddProductAction = async (values: AddProductActionValue) => {

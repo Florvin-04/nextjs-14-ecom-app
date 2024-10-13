@@ -10,9 +10,9 @@ export const handleUpdateProfileAction = async (updatedData: Partial<User>) => {
 
   if (!user) throw new Error("Unauthorized");
 
-  const { avatarBlob, ...restUpdatedData } = userSchema
-    .partial()
-    .parse(updatedData);
+  const { ...restUpdatedData } = userSchema.partial().parse(updatedData);
+
+  console.log("restUpdatedData", restUpdatedData);
 
   const updatedUser = await prisma.user.update({
     where: { id: user.id },
