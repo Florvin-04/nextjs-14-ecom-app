@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 "use server";
 
 import { validateRequest } from "@/auth";
@@ -8,8 +7,11 @@ import {
   AddProductActionValue,
   addProductSchema,
   UpdateProductValue,
+  userSchema,
 } from "@/lib/validation";
+import { User } from "@prisma/client";
 import { UTApi } from "uploadthing/server";
+
 export const handleAddProductAction = async (values: AddProductActionValue) => {
   const { user } = await validateRequest();
 
@@ -50,6 +52,8 @@ export const handleUpdateProductAction = async (
   const { user } = await validateRequest();
 
   if (!user || !user.role.ADMIN) throw new Error("Unauthorized");
+
+  console.log("values action", values);
 
   // const { startUpload: startUploadProductImage } =
   //   useUploadThing("productImage");

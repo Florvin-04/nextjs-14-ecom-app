@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -9,12 +7,14 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import UserProfileButton from "@/components/custom/UserProfileButton";
 
 export default function AdminSidebar() {
   return (
     <aside className="h-full border-r">
       <div className="h-10 flex items-center justify-center">
-        <p>ADMIN</p>
+        <p>ADMIN </p>
+        <UserProfileButton />
       </div>
       <hr />
       <div className="px-2 mt-3">

@@ -101,6 +101,7 @@ export const validateRequest = cache(
 
     const user: UserDetails | null = result.user
       ? {
+          id: result.user.id,
           role: createUserRole(result.user.role),
           username: result.user.username,
           displayName: result.user.displayName,

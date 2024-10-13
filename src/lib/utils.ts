@@ -28,7 +28,8 @@ export const fileTypeChecker = ({
   file: File;
   extensionNames: string[];
 }) => {
-  const fileExtensionName = file.name.split(".")[1];
+  const splitExtensionName = file.name.split(".");
+  const fileExtensionName = splitExtensionName[splitExtensionName.length - 1];
 
   if (!fileExtensionName) return false;
 
@@ -55,3 +56,38 @@ export const createNewFileFromBlob = ({
 
 export const wait = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
+
+export const getPartialUpdatedData = <T extends object>(
+  initialData: T,
+  updatedData: T
+) => {
+  return Object.keys(updatedData).reduce((acc, key) => {
+    const typedKey = key as keyof T;
+
+    if (updatedData[typedKey] !== initialData[typedKey]) {
+      acc[typedKey] = updatedData[typedKey];
+    }
+
+    return acc;
+  }, {} as Partial<T>);
+};
+
+type Checkable = Record<string, unknown> | unknown[];
+
+/**
+ * Helper to check if all values in an object or array are true.
+ * @param input - Object or array to check
+ * @returns boolean - true if all values are true, false otherwise
+ */
+export const areAllTrue = (input: Checkable): boolean => {
+  if (Array.isArray(input)) {
+    // For arrays, check if all elements are truthy
+    return input.length > 0 && input.every((value) => Boolean(value));
+  } else if (typeof input === "object" && input !== null) {
+    // For objects, check if all property values are truthy
+    const values = Object.values(input);
+    // Check if object has keys and all values are truthy
+    return values.length > 0 && values.every((value) => Boolean(value));
+  }
+  return false; // In case of a non-object, non-array input
+};

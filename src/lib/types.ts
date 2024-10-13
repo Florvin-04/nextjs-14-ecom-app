@@ -44,7 +44,7 @@ export type UserDetailsRoleType = {
   [K in RoleType]: boolean; // Automatically creates properties based on RoleType
 };
 
-export type UserDetails = Omit<DatabaseUserAttributes, "id" | "role"> & {
+export type UserDetails = Omit<DatabaseUserAttributes, "role"> & {
   role: UserDetailsRoleType;
 };
 

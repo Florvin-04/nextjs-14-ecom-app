@@ -1,7 +1,8 @@
 import { validateRequest } from "@/auth";
+import SessionProvider from "@/providers/SessionProvider";
 import { redirect } from "next/navigation";
 import React from "react";
-import SessionProvider from "./SessionProvider";
+
 
 const layout = async ({
   children,

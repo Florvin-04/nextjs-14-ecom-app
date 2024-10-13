@@ -74,3 +74,18 @@ export type UpdateProductValue = AddProductType & {
   imageBlob: Blob;
   imageUrl: string;
 };
+
+export const userSchema = z.object({
+  username: z.string().trim().min(1, "required field"),
+  displayName: z.string().trim().min(1, "required field"),
+  avatarBlob: z
+    .any()
+    .refine((data) => data !== null && data !== undefined, {
+      message: "Avatar is required", // Custom error for missing field
+    })
+    .refine((data) => data instanceof Blob, {
+      message: "Avatar must be a valid Blob object", // Custom error for invalid Blob
+    }),
+});
+
+export type UserSchemaValue = z.infer<typeof userSchema>;

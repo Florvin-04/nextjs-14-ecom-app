@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-query";
 import { handleDeleteProductAction } from "./action";
 import { ProductData } from "@/lib/types";
+import { UserSchemaValue } from "@/lib/validation";
 
 export const useDeleteProductMutation = () => {
   const queryClient = useQueryClient();

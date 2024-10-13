@@ -1,0 +1,58 @@
+import { useMutation } from "@tanstack/react-query";
+
+import { UserSchemaValue } from "@/lib/validation";
+import { handleUpdateProfileAction } from "./action";
+import { toast } from "sonner";
+import { createNewFileFromBlob } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { useUploadThing } from "@/lib/uploadthing";
+
+export function useUpdateProfileMutation() {
+  const router = useRouter();
+
+  const { startUpload: startUploadAvatar } = useUploadThing("userAvatar");
+
+  const mutation = useMutation({
+    mutationFn: async (
+      updatedData: Partial<UserSchemaValue> & { id: string }
+    ) => {
+      console.log("updatedData mutaion", updatedData);
+
+      const { avatarBlob, ...restUpdatedData } = updatedData;
+
+      let avatarUrl = "";
+
+      if (avatarBlob) {
+        const convertedImage = createNewFileFromBlob({
+          blob: avatarBlob,
+          fileName: `${updatedData.id.slice(-5)}_Avatar_image.webp`,
+          type: "image/webp",
+        });
+
+        const uploadedAvatar = await startUploadAvatar([convertedImage], {});
+
+        avatarUrl = uploadedAvatar?.[0].serverData.fileUrl || "";
+      }
+
+      return await handleUpdateProfileAction({ ...restUpdatedData, avatarUrl });
+    },
+
+    onSuccess: async (updatedData) => {
+      console.log("updatedData", updatedData);
+      router.refresh();
+    },
+
+    onError: (error) => {
+      toast.error("Something Went Wrong", {
+        duration: Infinity,
+        description: error.message,
+        action: {
+          label: "Undo",
+          onClick: () => console.log("Undo"),
+        },
+      });
+    },
+  });
+
+  return mutation;
+}

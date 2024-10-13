@@ -9,6 +9,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import AddProductButton from "../../_components/AddProductButton";
+import { cn } from "@/lib/utils";
 
 const PAGE_LIMIT = 5;
 
@@ -17,7 +18,7 @@ export default function ProductsTable() {
   const page = searchParams.get("page") || "1";
   const search = searchParams.get("search") || "";
 
-  const { data, isLoading, isError } = useQuery<ProductData, Error>({
+  const { data, isLoading, isError, isPending } = useQuery<ProductData, Error>({
     queryKey: [
       "products-admin",
       { page: page, limit: PAGE_LIMIT, search: search },
@@ -57,7 +58,7 @@ export default function ProductsTable() {
         <div className="flex items-center gap-2">
           <SearchInput />
         </div>
-        <div>
+        <div className={cn("", isPending && "opacity-50 pointer-events-none")}>
           <DataTable columns={columns} data={data.products} />
           <div>
             <CustomPagination

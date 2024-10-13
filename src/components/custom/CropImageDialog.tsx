@@ -40,7 +40,7 @@ export default function CropImageDialog({
 
   return (
     <Dialog open onOpenChange={onClosed}>
-      <DialogContent className="">
+      <DialogContent onInteractOutside={(e) => e.preventDefault()} className="">
         <DialogHeader>
           <DialogTitle>Crop Image</DialogTitle>
         </DialogHeader>
